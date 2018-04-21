@@ -1,0 +1,11 @@
+[package]
+name = "demo"
+version = "0.1.0"
+authors = ["M Farkas-Dyck <strake888@gmail.com>"]
+
+[dependencies]
+bin = "0.1.2"
+cela = { path = ".." }
+null-terminated = "0.2.9"
+rand = "0.4"
+rsdl2 = { path = "../../rsdl2.rs" }
