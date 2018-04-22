@@ -43,10 +43,9 @@ mod tests {
 
     #[test]
     fn conway_life_blinker() {
-        use core::mem;
         let src_raw_grid: [u8; 8] = [2, 2, 2, 0, 0, 0, 0, 0];
         let mut dst_raw_grid = [0u8; 8];
-        evolve(unsafe { mem::transmute(&src_raw_grid[..]) }, unsafe { mem::transmute(&mut dst_raw_grid[..]) }, [8; 2], conway_life);
+        evolve((&src_raw_grid[..]).into(), (&mut dst_raw_grid[..]).into(), [8, 8], conway_life);
         assert_eq!([0, 7, 0, 0, 0, 0, 0, 0], dst_raw_grid);
     }
 

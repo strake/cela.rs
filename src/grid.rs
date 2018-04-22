@@ -1,4 +1,5 @@
 use bin::slice::Bits;
+use core::mem;
 use core::ops::*;
 
 use Neighborhood;
@@ -29,4 +30,24 @@ impl Grid {
     pub fn set(&mut self, [w, h]: [usize; 2], [x, y]: [usize; 2], b: bool) {
         self.0.modify(linearize(w, h, x, y), |_| b);
     }
+}
+
+impl<'a> From<&'a Bits<::endian::Lil>> for &'a Grid {
+    #[inline]
+    fn from(x: &'a Bits<::endian::Lil>) -> Self { unsafe { mem::transmute(x) } }
+}
+
+impl<'a> From<&'a mut Bits<::endian::Lil>> for &'a mut Grid {
+    #[inline]
+    fn from(x: &'a mut Bits<::endian::Lil>) -> Self { unsafe { mem::transmute(x) } }
+}
+
+impl<'a> From<&'a [u8]> for &'a Grid {
+    #[inline]
+    fn from(x: &'a [u8]) -> Self { unsafe { mem::transmute(x) } }
+}
+
+impl<'a> From<&'a mut [u8]> for &'a mut Grid {
+    #[inline]
+    fn from(x: &'a mut [u8]) -> Self { unsafe { mem::transmute(x) } }
 }
