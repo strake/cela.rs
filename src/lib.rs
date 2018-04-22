@@ -7,6 +7,7 @@
 extern crate bin;
 extern crate endian;
 
+use core::mem;
 use core::ops::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -17,8 +18,17 @@ pub use grid::*;
 
 #[inline]
 pub fn evolve<Rule: Fn(Neighborhood) -> bool>(src: &Grid, dst: &mut Grid, size: [usize; 2], rule: Rule) {
+    assert!(mem::size_of_val(dst).checked_shl(3).unwrap() >=
+            usize::checked_mul(size[0], size[1]).unwrap());
+    assert!(mem::size_of_val(src).checked_shl(3).unwrap() >=
+            usize::checked_mul(size[0], size[1]).unwrap());
+    unsafe { evolve_unchecked(src, dst, size, rule) };
+}
+
+#[inline]
+pub unsafe fn evolve_unchecked<Rule: Fn(Neighborhood) -> bool>(src: &Grid, dst: &mut Grid, size: [usize; 2], rule: Rule) {
     for y in 0..size[1] { for x in 0..size[0] {
-        dst.set(size, [x, y], rule(src.get_nbhd(size, [x, y])))
+        dst.set_unchecked(size, [x, y], rule(src.get_nbhd_unchecked(size, [x, y])))
     } }
 }
 

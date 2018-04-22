@@ -27,8 +27,27 @@ impl Grid {
     }
 
     #[inline]
+    pub unsafe fn get_nbhd_unchecked(&self, [w, h]: [usize; 2], [x, y]: [usize; 2]) -> Neighborhood {
+        let (w, h, x, y) = (w as isize, h as isize, x as isize, y as isize);
+        Neighborhood((self.0.get_unchecked(linearize(w, h, x+1, y+1) as _) as u8) << 0 |
+                     (self.0.get_unchecked(linearize(w, h, x+0, y+1) as _) as u8) << 1 |
+                     (self.0.get_unchecked(linearize(w, h, x-1, y+1) as _) as u8) << 2 |
+                     (self.0.get_unchecked(linearize(w, h, x-1, y+0) as _) as u8) << 3 |
+                     (self.0.get_unchecked(linearize(w, h, x-1, y-1) as _) as u8) << 4 |
+                     (self.0.get_unchecked(linearize(w, h, x+0, y-1) as _) as u8) << 5 |
+                     (self.0.get_unchecked(linearize(w, h, x+1, y-1) as _) as u8) << 6 |
+                     (self.0.get_unchecked(linearize(w, h, x+1, y+0) as _) as u8) << 7,
+                     self.0.get_unchecked(linearize(w, h, x, y) as _))
+    }
+
+    #[inline]
     pub fn set(&mut self, [w, h]: [usize; 2], [x, y]: [usize; 2], b: bool) {
         self.0.modify(linearize(w, h, x, y), |_| b);
+    }
+
+    #[inline]
+    pub unsafe fn set_unchecked(&mut self, [w, h]: [usize; 2], [x, y]: [usize; 2], b: bool) {
+        self.0.modify_unchecked(linearize(w, h, x, y), |_| b);
     }
 }
 
