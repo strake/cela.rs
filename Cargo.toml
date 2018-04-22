@@ -6,3 +6,6 @@ authors = ["M Farkas-Dyck <strake888@gmail.com>"]
 [dependencies]
 bin = "0.1.2"
 end = "0.0.1"
+
+[dev-dependencies]
+rand = "0.4"

@@ -2,6 +2,7 @@
 
 #![feature(reverse_bits)]
 #![feature(slice_patterns)]
+#![feature(test)]
 
 extern crate bin;
 extern crate endian;
@@ -58,6 +59,12 @@ pub fn conway_life(Neighborhood(xs, x): Neighborhood) -> bool { 3 == xs.count_on
 
 #[cfg(test)]
 mod tests {
+    extern crate rand;
+    extern crate test;
+
+    use self::rand::Rng;
+    use self::test::Bencher;
+
     use super::*;
 
     #[test]
@@ -67,5 +74,20 @@ mod tests {
         let mut dst_raw_grid = [0u8; 8];
         evolve(unsafe { mem::transmute(&src_raw_grid[..]) }, unsafe { mem::transmute(&mut dst_raw_grid[..]) }, [8; 2], conway_life);
         assert_eq!([0, 7, 0, 0, 0, 0, 0, 0], dst_raw_grid);
+    }
+
+    #[bench]
+    fn bench(b: &mut Bencher) {
+        use core::mem;
+        let mut raw_grids: [[u8; 512]; 2] = unsafe { mem::uninitialized() };
+        rand::thread_rng().fill_bytes(&mut raw_grids[0][..]);
+        let mut which = false;
+        b.iter(|| {
+            evolve(unsafe { mem::transmute(&raw_grids[which as usize][..]) },
+                   unsafe { mem::transmute(&mut raw_grids[!which as usize][..]) },
+                   [64; 2], conway_life);
+            which ^= true;
+            raw_grids[which as usize]
+        });
     }
 }
